@@ -1,5 +1,4 @@
 .App {
-  position: relative;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -18,10 +17,12 @@
 }
 
 .cellFull {
-  background: black;
+  background: lightblue;
 }
 
 .boardRow {
   display: flex;
   flex-direction: row;
+  align-content: center;
+  justify-content: center;
 }

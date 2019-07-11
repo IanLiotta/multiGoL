@@ -43,6 +43,15 @@ const Table = ({world}) => {
 
 const App = () => {
   const [world, setWorld] = useState({});
+  const [color, setColor] = useState(0);
+
+  socket.on('worldUpdate', (newWorld) => {
+    setWorld(newWorld);
+  });
+
+  socket.on('newUser', (newColor) => {
+    setColor(newColor);
+  });
 
   useEffect(() => {
     const updateGridTimer = setInterval(() => {
@@ -51,9 +60,7 @@ const App = () => {
       });
     }, 1000);
 
-    socket.on('worldUpdate', (newWorld) => {
-      setWorld(newWorld);
-    });
+
 
     return(() => {
       clearInterval(updateGridTimer);
@@ -63,6 +70,7 @@ const App = () => {
   return (
     <div className='App'>
       <Table world={world} />
+      <p>Your color id is {color}</p>
     </div>
   );
 }

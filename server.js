@@ -17,12 +17,23 @@ class World {
     }
 }
 
-const world = new World(6);
+let world = new World(6);
+const clearTimer = setInterval(() => {
+    world = new World(6);
+}, 8000)
+
+const users = new Map();
 
 io.set('origins', '*:*');
 
 io.on('connection', (socket) => {
     console.log('A client connected.');
+    if(!users.get(socket.id)){
+        const color = Math.floor(Math.random() * 255);
+        console.log('Adding new user ', socket.id, color);
+        users.set(socket.id, color);
+        socket.emit('newUser', color);
+    }
 
     socket.on('getWorld', (cb) => {
         cb(world);
@@ -31,6 +42,7 @@ io.on('connection', (socket) => {
     socket.on('fillCell', (row, col, value) => {
         console.log(`Heard fillCell ${row} ${col} ${value}`);
         world.grid[row][col] = value;
+        io.emit('worldUpdate', world);
     });
 });
 
