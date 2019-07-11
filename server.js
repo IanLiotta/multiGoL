@@ -22,18 +22,24 @@ const clearTimer = setInterval(() => {
     world = new World(6);
 }, 8000)
 
-const users = new Map();
+const colorChart = {
+    0:'red',
+    1:'orange',
+    2:'yellow',
+    3:'green',
+    4:'blue',
+    5:'indigo',
+    6:'violet'
+}
 
 io.set('origins', '*:*');
 
 io.on('connection', (socket) => {
     console.log('A client connected.');
-    if(!users.get(socket.id)){
-        const color = Math.floor(Math.random() * 255);
-        console.log('Adding new user ', socket.id, color);
-        users.set(socket.id, color);
-        socket.emit('newUser', color);
-    }
+    const colorPicker = Math.floor(Math.random() * 7);
+    const color = colorChart[colorPicker];
+    console.log('Adding new user ', socket.id, color);
+    socket.emit('newUser', color);
 
     socket.on('getWorld', (cb) => {
         cb(world);

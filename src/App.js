@@ -12,9 +12,9 @@ const Cell = ({col, row, value, color}) => {
   return(
     <button 
       key={col} 
-      className={value === 0 ? 'cell cellEmpty' : 'cell cellFull' }
+      className={value === '' ? 'cell cellEmpty' : `cell ${value}` }
       onClick={fillCell}
-    >{value}</button>
+    ></button>
   );
 }
 
@@ -49,7 +49,7 @@ const Table = ({world, color}) => {
 
 const App = () => {
   const [world, setWorld] = useState({});
-  const [color, setColor] = useState(0);
+  const [color, setColor] = useState('');
 
   socket.on('worldUpdate', (newWorld) => {
     setWorld(newWorld);
@@ -65,8 +65,6 @@ const App = () => {
         setWorld(newWorld);
       });
     }, 1000);
-
-
 
     return(() => {
       clearInterval(updateGridTimer);
