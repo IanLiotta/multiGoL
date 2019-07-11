@@ -4,9 +4,9 @@ import './App.css';
 
 const socket = openSocket('http://localhost:8000');
 
-const Cell = ({col, row, value}) => {
+const Cell = ({col, row, value, color}) => {
   const fillCell = () => {
-    socket.emit('fillCell', row, col, 1);
+    socket.emit('fillCell', row, col, color);
   }
 
   return(
@@ -18,7 +18,7 @@ const Cell = ({col, row, value}) => {
   );
 }
 
-const Table = ({world}) => {
+const Table = ({world, color}) => {
   const createTable = () => {
     let rowId = 0;
     const table = [];
@@ -26,7 +26,13 @@ const Table = ({world}) => {
       let cols = [];
       let cellId = 0;
       for(let col = 0; col < world.size; col++) {
-        cols.push(<Cell key={cellId} col={cellId} row={rowId} value={world.grid[row][col]} />);
+        cols.push(<Cell 
+            key={cellId} 
+            col={cellId} 
+            row={rowId} 
+            value={world.grid[row][col]} 
+            color={color} 
+          />);
         cellId++;
       }
       table.push(<div key={rowId} className='boardRow'>{cols}</div>);
@@ -69,7 +75,7 @@ const App = () => {
 
   return (
     <div className='App'>
-      <Table world={world} />
+      <Table world={world} color={color}/>
       <p>Your color id is {color}</p>
     </div>
   );
