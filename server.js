@@ -10,16 +10,71 @@ class World {
         for(let rows = 0; rows < size; rows++){
             let colArr = [];
             for(let cols = 0; cols < size; cols++){
-                colArr.push(0);
+                colArr.push('');
             }
             this.grid.push(colArr);
         }
+    }
+
+    newGrid(size) {
+        let newGrid =[]
+        for(let rows = 0; rows < size; rows++){
+            let colArr = [];
+            for(let cols = 0; cols < size; cols++){
+                colArr.push('');
+            }
+            newGrid.push(colArr);
+        }
+        return newGrid;
+    }
+
+    getSubGrid(row, col) {
+        const row0 = [
+            (this.grid[row-1] && this.grid[row-1][col-1]),
+            (this.grid[row-1] && this.grid[row-1][col]),
+            (this.grid[row-1] && this.grid[row-1][col+1])
+        ];
+        const row1 = [
+            this.grid[row][col-1],
+            //this.grid[row][col],
+            this.grid[row][col+1]
+        ];
+        const row2 = [
+            (this.grid[row+1] && this.grid[row+1][col-1]),
+            (this.grid[row+1] && this.grid[row+1][col]),
+            (this.grid[row+1] && this.grid[row+1][col+1])
+        ];
+        return [row0, row1, row2];
+    }
+
+    grow(){
+        let newGrid = this.newGrid(this.size);
+        for(let row = 0; row < this.size; row++){
+            for(let col = 0; col < this.size; col++){
+                const neighbors = this.getSubGrid(row, col).reduce((previous, current) =>{
+                    return(previous += current.reduce((previous, current) => {
+                        return(previous += (current && current !== '') ? 1 : 0);
+                    }, 0));
+                }, 0);
+                if(neighbors === 3) {
+                    newGrid[row][col] = 'red';
+                }
+                else if(neighbors < 2 || neighbors > 3) {
+                    newGrid[row][col] = '';
+                }
+                else {
+                    newGrid[row][col] = this.grid[row][col];
+                }
+            }
+        }
+        this.grid = newGrid;
     }
 }
 
 let world = new World(6);
 const clearTimer = setInterval(() => {
-    world = new World(6);
+    //world = new World(6);
+    world.grow();
 }, 8000)
 
 const colorChart = {
