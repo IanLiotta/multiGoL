@@ -9,10 +9,22 @@ const Cell = ({col, row, value, color}) => {
     socket.emit('fillCell', row, col, color);
   }
 
+  const colorChart = {
+    1:'red',
+    2:'orange',
+    3:'yellow',
+    4:'green',
+    5:'blue',
+    6:'indigo',
+    7:'violet'
+  }
+
+  const colorValue = colorChart[value];
+
   return(
     <button 
       key={col} 
-      className={value === '' ? 'cell cellEmpty' : `cell ${value}` }
+      className={value === -1 ? 'cell cellEmpty' : `cell ${colorValue}` }
       onClick={fillCell}
     ></button>
   );
@@ -49,24 +61,14 @@ const Table = ({world, color}) => {
 
 const App = () => {
   const [world, setWorld] = useState({});
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState(-1);
 
   socket.on('worldUpdate', (newWorld) => {
     setWorld(newWorld);
   });
 
   socket.on('newUser', (colorIndex) => {
-    const colorChart = {
-      0:'red',
-      1:'orange',
-      2:'yellow',
-      3:'green',
-      4:'blue',
-      5:'indigo',
-      6:'violet'
-    }
-    const newColor = colorChart[colorIndex];
-    setColor(newColor);
+    setColor(colorIndex);
   });
 
   useEffect(() => {

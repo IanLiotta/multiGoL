@@ -10,7 +10,7 @@ class World {
         for(let rows = 0; rows < size; rows++){
             let colArr = [];
             for(let cols = 0; cols < size; cols++){
-                colArr.push('');
+                colArr.push(-1);
             }
             this.grid.push(colArr);
         }
@@ -21,7 +21,7 @@ class World {
         for(let rows = 0; rows < size; rows++){
             let colArr = [];
             for(let cols = 0; cols < size; cols++){
-                colArr.push('');
+                colArr.push(-1);
             }
             newGrid.push(colArr);
         }
@@ -49,19 +49,25 @@ class World {
 
     grow(){
         let newGrid = this.newGrid(this.size);
-        const colorTally = [0,0,0,0,0,0,0];
         for(let row = 0; row < this.size; row++){
             for(let col = 0; col < this.size; col++){
+                const colorTally = [0,0,0,0,0,0,0];
                 const neighbors = this.getSubGrid(row, col).reduce((previous, current) =>{
                     return(previous += current.reduce((previous, current) => {
-                        return(previous += (current && current !== '') ? 1 : 0);
+                        if(current && current !== -1) {colorTally[current]++;}
+                        return(previous += (current && current !== -1) ? 1 : 0);
                     }, 0));
                 }, 0);
+                let newColor = 1;
+                colorTally.reduce((mostFreq, current, index) => {
+                    if (current > mostFreq) {newColor = index}
+                    return (current > mostFreq ? current : mostFreq);
+                }, 0);
                 if(neighbors === 3) {
-                    newGrid[row][col] = 'red';
+                    newGrid[row][col] = newColor;
                 }
                 else if(neighbors < 2 || neighbors > 3) {
-                    newGrid[row][col] = '';
+                    newGrid[row][col] = -1;
                 }
                 else {
                     newGrid[row][col] = this.grid[row][col];
@@ -72,28 +78,29 @@ class World {
     }
 }
 
-let world = new World(6);
-const clearTimer = setInterval(() => {
-    //world = new World(6);
+let world = new World(12);
+const growTimer = setInterval(() => {
     world.grow();
-}, 8000)
+}, 5000)
 
 const colorChart = {
-    0:'red',
-    1:'orange',
-    2:'yellow',
-    3:'green',
-    4:'blue',
-    5:'indigo',
-    6:'violet'
+    1:'red',
+    2:'orange',
+    3:'yellow',
+    4:'green',
+    5:'blue',
+    6:'indigo',
+    7:'violet'
 }
+
+let lastColor = 0;
 
 io.on('connection', (socket) => {
     console.log('A client connected.');
-    const colorPicker = Math.floor(Math.random() * 7);
-    const color = colorChart[colorPicker];
+    lastColor = ((lastColor < 7) ? ++lastColor : 1);
+    const color = colorChart[lastColor];
     console.log('Adding new user ', socket.id, color);
-    socket.emit('newUser', colorPicker);
+    socket.emit('newUser', lastColor);
 
     socket.on('getWorld', (cb) => {
         cb(world);
