@@ -5,6 +5,7 @@ import './App.css';
 const socket = openSocket('http://localhost:8000');
 
 const Cell = ({col, row, value, color}) => {
+  
   const fillCell = () => {
     socket.emit('fillCell', row, col, color);
   }
@@ -20,12 +21,13 @@ const Cell = ({col, row, value, color}) => {
   }
 
   const colorValue = colorChart[value];
+  
 
   return(
     <button 
       key={col} 
       className={value === -1 ? 'cell cellEmpty' : `cell ${colorValue}` }
-      onClick={fillCell}
+      onMouseOver={fillCell}
     ></button>
   );
 }
@@ -72,11 +74,15 @@ const App = () => {
   });
 
   useEffect(() => {
+    socket.on('initalLoad', (newWorld) => {
+      setWorld(newWorld);
+    });
+    
     const updateGridTimer = setInterval(() => {
       socket.emit('getWorld', (newWorld) => {
         setWorld(newWorld);
       });
-    }, 1000);
+    }, 300);
 
     return(() => {
       clearInterval(updateGridTimer);

@@ -6,14 +6,7 @@ const io = require('socket.io')(server);
 class World {
     constructor(size) {
         this.size = size;
-        this.grid = [];
-        for(let rows = 0; rows < size; rows++){
-            let colArr = [];
-            for(let cols = 0; cols < size; cols++){
-                colArr.push(-1);
-            }
-            this.grid.push(colArr);
-        }
+        this.grid = this.newGrid(size);
     }
 
     newGrid(size) {
@@ -78,10 +71,10 @@ class World {
     }
 }
 
-let world = new World(12);
+let world = new World(32);
 const growTimer = setInterval(() => {
     world.grow();
-}, 5000)
+}, 500)
 
 const colorChart = {
     1:'red',
@@ -101,6 +94,7 @@ io.on('connection', (socket) => {
     const color = colorChart[lastColor];
     console.log('Adding new user ', socket.id, color);
     socket.emit('newUser', lastColor);
+    socket.emit('initalLoad', world);
 
     socket.on('getWorld', (cb) => {
         cb(world);
