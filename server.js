@@ -49,6 +49,7 @@ class World {
 
     grow(){
         let newGrid = this.newGrid(this.size);
+        const colorTally = [0,0,0,0,0,0,0];
         for(let row = 0; row < this.size; row++){
             for(let col = 0; col < this.size; col++){
                 const neighbors = this.getSubGrid(row, col).reduce((previous, current) =>{
@@ -87,14 +88,12 @@ const colorChart = {
     6:'violet'
 }
 
-io.set('origins', '*:*');
-
 io.on('connection', (socket) => {
     console.log('A client connected.');
     const colorPicker = Math.floor(Math.random() * 7);
     const color = colorChart[colorPicker];
     console.log('Adding new user ', socket.id, color);
-    socket.emit('newUser', color);
+    socket.emit('newUser', colorPicker);
 
     socket.on('getWorld', (cb) => {
         cb(world);

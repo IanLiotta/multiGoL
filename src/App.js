@@ -55,7 +55,17 @@ const App = () => {
     setWorld(newWorld);
   });
 
-  socket.on('newUser', (newColor) => {
+  socket.on('newUser', (colorIndex) => {
+    const colorChart = {
+      0:'red',
+      1:'orange',
+      2:'yellow',
+      3:'green',
+      4:'blue',
+      5:'indigo',
+      6:'violet'
+    }
+    const newColor = colorChart[colorIndex];
     setColor(newColor);
   });
 
@@ -76,6 +86,7 @@ const App = () => {
       <Table world={world} color={color}/>
       <p>Your color id is {color}</p>
     </div>
+    
   );
 }
 
