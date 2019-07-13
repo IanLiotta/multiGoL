@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import openSocket from 'socket.io-client';
+import io from 'socket.io-client';
 import './App.css';
 
-const socket = openSocket('http://localhost:8000');
+const socket = io('http://localhost:3001');
+console.log(socket);
 
 const Cell = ({col, row, value, color}) => {
   
@@ -76,16 +77,6 @@ const App = () => {
   useEffect(() => {
     socket.on('initalLoad', (newWorld) => {
       setWorld(newWorld);
-    });
-    
-    const updateGridTimer = setInterval(() => {
-      socket.emit('getWorld', (newWorld) => {
-        setWorld(newWorld);
-      });
-    }, 300);
-
-    return(() => {
-      clearInterval(updateGridTimer);
     });
   });
 

@@ -1,7 +1,4 @@
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')();
 
 class World {
     constructor(size) {
@@ -74,7 +71,8 @@ class World {
 let world = new World(32);
 const growTimer = setInterval(() => {
     world.grow();
-}, 500)
+    io.emit('worldUpdate', world);
+}, 1000)
 
 const colorChart = {
     1:'red',
@@ -107,6 +105,5 @@ io.on('connection', (socket) => {
     });
 });
 
-const listener = server.listen((process.env.PORT || 8000), () => {
-    console.log('listening on port ' + listener.address().port);
-});
+io.listen(3001);
+console.log(`listening on port 3001`);
