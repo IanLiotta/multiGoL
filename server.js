@@ -1,4 +1,25 @@
-const io = require('socket.io')();
+const PUBLIC_PATH = "/public/";
+const webpack = require('webpack');
+const middleware = require('webpack-dev-middleware');
+const webpackConfig = require('./webpack.config.js');
+const compiler = webpack(webpackConfig);
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+app.use(express.static('public'));
+app.use(middleware(compiler, {
+    publicPath: webpackConfig.output.publicPath
+  }));
+
+app.get("/", (req, res) =>{
+    res.sendFile(__dirname + PUBLIC_PATH + 'index.html');
+});
+
+const listener = server.listen((process.env.PORT || 8000), () => {
+    console.log('listening on port ' + listener.address().port);
+}); 
 
 class World {
     constructor(size) {
@@ -105,5 +126,3 @@ io.on('connection', (socket) => {
     });
 });
 
-io.listen(3001);
-console.log(`listening on port 3001`);
